@@ -87,6 +87,47 @@ SHOW GRANTS FOR 'ecomuser'@'%';
 
 Create "t2.micro" EC2 Instance and Open port "" for PHP Application server
 
+## Note ==> HERE in our PROD Branch Code we alredy Edit these Code in "index.php", so no need to Change any thing HERE
+
+### Good-To-Know
+```
+As of Now We Hardcode the DB Credentials in "index.php"
+
+In "index.php" we mention our DB credentials Manually and push it to GIT. 
+We have 2 problems HERE
+1. These code is not eligibile for CICD, we manually enter the Credentials
+2. It expose our Credentials to everyone
+
+Which is Not recommended in PROD as well
+
+So we need to Pass our DB Credentials as Environment Variables
+For that we need to Change our Code 
+
+Open your "index.php" Edit MYSQL configuration
+
+You see like these
+
+----
+// use when starting application locally
+$link = mysqli_connect('172.20.1.101', 'ecomuser', 'ecompassword', 'ecomdb');
+---
+
+
+So we need to Edit these code as per Environment Variables
+
+----
+// Fetch database connection details directly from environment variables
+$dbHost = getenv('MYSQL_HOST');
+$dbUser = getenv('MYSQL_USER');
+$dbPassword = getenv('MYSQL_PASSWORD');
+$dbName = getenv('MYSQL_DATABASE');
+
+// Attempt to connect to the database
+$link = mysqli_connect($dbHost, $dbUser, $dbPassword, $dbName);
+----
+
+```
+
 ### Install PHP and its dependencies
 ```
 sudo yum install -y httpd php php-mysqlnd
@@ -115,7 +156,7 @@ cd PHP-2-tier-UMS-App
 ```
 ##### Switch to Local-setup Branch
 ```
-sudo git checkout 01-Local-setup-Dev
+sudo git checkout 02-Local-setup-Prod
 ```
 #### Cop ythe Content to our HTTPD webserver Directory
 
@@ -123,11 +164,19 @@ sudo git checkout 01-Local-setup-Dev
 sudo cp * /var/www/html/
 ```
 
-#### Edit "index.php" and Mention your DB Details
+#### Pass our DB Creentials as Environment Variables
 
 ```
-// use when starting application locally
- $link = mysqli_connect('<AWS-Private-IP>', 'ecomuser', 'ecompassword', 'ecomdb');
+export MYSQL_HOST="<your-DB-Private-IP>"
+export MYSQL_USER="ecomuser"
+export MYSQL_PASSWORD="P@55Word"
+export MYSQL_DATABASE="ecomdb"
+```
+
+#### Restart our Web server HTTPD
+
+```
+sudo systemctl restart httpd
 ```
 
 ## Access Your Application in Browser
@@ -168,7 +217,7 @@ EOF
 Load these DATA into DB
 
 ```
-sudo mysql < db-load.sql
+mysql -u ecomuser -p ecomdb < /path/to/db-load.sql
 ```
 
 ### Way-2 ==> Login to your other server say example catalouge server
