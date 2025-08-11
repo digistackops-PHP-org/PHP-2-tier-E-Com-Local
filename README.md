@@ -1,179 +1,154 @@
-# Introduction
+# Database Setup
+Create "t2.micro" EC2 Instance and open port "3306" for DB 
 
-This is a sample e-commerce application built for learning purposes.
-
-Here's how to deploy it on CentOS systems:
-
-## Deploy Pre-Requisites
-
-1. Install FirewallD
-
+## Install MYSQL DB
 ```
-sudo yum install -y firewalld
-sudo systemctl start firewalld
-sudo systemctl enable firewalld
-sudo systemctl status firewalld
+sudo yum update -y
+sudo wget https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm
+sudo dnf install mysql80-community-release-el9-1.noarch.rpm -y
+sudo rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2023
+sudo dnf install mysql-community-client -y
+sudo dnf install mysql-community-server -y
+sudo systemctl start mysqld
+sudo systemctl enable mysqld
+sudo systemctl status mysqld
 ```
 
-## Deploy and Configure Database
+## Setup MYSQL DB
 
-1. Install MariaDB
-
+#### Allow any Host connect to DB
 ```
-sudo yum install -y mariadb-server
 sudo vi /etc/my.cnf
-sudo systemctl start mariadb
-sudo systemctl enable mariadb
+```
+ADD these Under [mysqld]
+```
+bind-address = 0.0.0.0
+```
+Restart MYSQL DB
+```
+sudo systemctl restart mysqld
 ```
 
-2. Configure firewall for Database
+Get your temporary root Password
+```
+sudo grep 'temporary password' /var/log/mysqld.log
+```
+Setup your root Password
+```
+sudo mysql_secure_installation
+```
+Login to your MYSQL
+```
+mysql -u root -p
+```
+Test it is working or Not
+```
+SELECT VERSION();
+```
+## Setup MYSQL DB
+
+Get your temporary root Password
+```
+sudo grep 'temporary password' /var/log/mysqld.log
+```
+Setup your root Password
+```
+sudo mysql_secure_installation
+```
+Login to your MYSQL
+```
+mysql -u root -p
+```
+Test it is working or Not
+```
+SELECT VERSION();
+```
+## Create our Application DB 'user'
+```
+CREATE DATABASE ecomdb;
+```
+Check the DB created or Not
+```
+SHOW DATABASES LIKE 'ecomdb';
+```
+## Create one system User for our Application in DB
+These user can login to DB to do Tasks
+```
+CREATE USER '<user-name>'@'Host-IP' IDENTIFIED BY 'Password-HERE';
+
+GRANT ALL PRIVILEGES ON <DB-Name>.* TO '<user-name>'@'Host-IP';
+
+FLUSH PRIVILEGES;
+```
 
 ```
-sudo firewall-cmd --permanent --zone=public --add-port=3306/tcp
-sudo firewall-cmd --reload
+CREATE USER 'ecomuser'@'%' IDENTIFIED BY 'P@55Word';
+GRANT ALL PRIVILEGES ON ecomdb.* TO 'ecomuser'@'%';
+FLUSH PRIVILEGES;
 ```
+#### HERE "%" => means any Host will connect
 
-3. Configure Database
-
-```
-$ mysql
-MariaDB > CREATE DATABASE ecomdb;
-MariaDB > CREATE USER 'ecomuser'@'localhost' IDENTIFIED BY 'ecompassword';
-MariaDB > GRANT ALL PRIVILEGES ON *.* TO 'ecomuser'@'localhost';
-MariaDB > FLUSH PRIVILEGES;
-```
-
-> ON a multi-node setup remember to provide the IP address of the web server here: `'ecomuser'@'web-server-ip'`
-
-4. Load Product Inventory Information to database
-
-Create the db-load-script.sql
+Check the Permissions of the "appuser" in DB
 
 ```
-cat > db-load-script.sql <<-EOF
-USE ecomdb;
-CREATE TABLE products (id mediumint(8) unsigned NOT NULL auto_increment,Name varchar(255) default NULL,Price varchar(255) default NULL, ImageUrl varchar(255) default NULL,PRIMARY KEY (id)) AUTO_INCREMENT=1;
-
-INSERT INTO products (Name,Price,ImageUrl) VALUES ("Laptop","100","c-1.png"),("Drone","200","c-2.png"),("VR","300","c-3.png"),("Tablet","50","c-5.png"),("Watch","90","c-6.png"),("Phone Covers","20","c-7.png"),("Phone","80","c-8.png"),("Laptop","150","c-4.png");
-
-EOF
+SELECT user, host FROM mysql.ecomdb WHERE user='ecomuser';
 ```
 
-Run sql script
+Check the Grants of the "appuser" in DB
 
 ```
+SHOW GRANTS FOR 'ecomuser'@'%';
+```
 
+# Lod Dummy Data to our Application
+
+HERE we have Dummy data in the file "db-load.sql"
+```
 sudo mysql < db-load-script.sql
 ```
 
+# Application server Setup
 
-## Deploy and Configure Web
+Create "t2.micro" EC2 Instance and Open port "" for PHP Application server
 
-1. Install required packages
-
+### Install Node
 ```
-sudo yum install -y httpd php php-mysqlnd
-sudo firewall-cmd --permanent --zone=public --add-port=80/tcp
-sudo firewall-cmd --reload
+sudo yum install -y httpd php php-mysqlnd php-mysql
 ```
-
-2. Configure httpd
-
-Change `DirectoryIndex index.html` to `DirectoryIndex index.php` to make the php page the default page
+#### By default htpd web server servers index.html page, so we need to show the page "index.php", for that we need to change the configuration in from "index.html" to "index.php" in the file /etc/httpd/conf/httpd.conf
 
 ```
 sudo sed -i 's/index.html/index.php/g' /etc/httpd/conf/httpd.conf
 ```
-
-3. Start httpd
-
+Start httpd webserver
 ```
 sudo systemctl start httpd
 sudo systemctl enable httpd
+sudo systemctl status httpd
 ```
 
-4. Download code
+### Install Git
+```
+sudo yum install git -y
+```
+#### To start this application first you can get the code using below url
+##### Clone the Repo
+```
+sudo git clone https://github.com/techizone-Small-Project-org/PHP-2-tier-UMS-App.git
+cd PHP-2-tier-UMS-App
+```
+##### Switch to Local-setup Branch
+```
+sudo git checkout 01-Local-setup-Dev
+```
+#### Edit "index.php" and Mention your DB Details
 
 ```
-sudo yum install -y git
-sudo git clone https://github.com/kodekloudhub/learning-app-ecommerce.git /var/www/html/
+// use when starting application locally
+ $link = mysqli_connect('<AWS-Private-IP>', 'ecomuser', 'ecompassword', 'ecomdb');
 ```
 
-<!-- 5. Update index.php
-
-Update [index.php](https://github.com/kodekloudhub/learning-app-ecommerce/blob/13b6e9ddc867eff30368c7e4f013164a85e2dccb/index.php#L107) file to connect to the right database server. In this case `localhost` since the database is on the same server.
-
+#### Access Your Application in Browser
 ```
-sudo sed -i 's/172.20.1.101/localhost/g' /var/www/html/index.php
-
-              <?php
-                        $link = mysqli_connect('172.20.1.101', 'ecomuser', 'ecompassword', 'ecomdb');
-                        if ($link) {
-                        $res = mysqli_query($link, "select * from products;");
-                        while ($row = mysqli_fetch_assoc($res)) { ?>
-```
-
-> ON a multi-node setup remember to provide the IP address of the database server here.
-```
-sudo sed -i 's/172.20.1.101/localhost/g' /var/www/html/index.php
-```
--->
-
-5. Create and Configure the `.env` File
-
-   Create an `.env` file in the root of your project folder.
-
-   ```sh
-   cat > /var/www/html/.env <<-EOF
-   DB_HOST=localhost
-   DB_USER=ecomuser
-   DB_PASSWORD=ecompassword
-   DB_NAME=ecomdb
-   EOF
-
-6. Update `index.php`
-
-   Update the `index.php` file to load the environment variables from the `.env` file and use them to connect to the database.
-
-   ```php
-   <?php
-   // Function to load environment variables from a .env file
-   function loadEnv($path)
-   {
-       if (!file_exists($path)) {
-           return false;
-       }
-
-       $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-       foreach ($lines as $line) {
-           if (strpos(trim($line), '#') === 0) {
-               continue;
-           }
-
-           list($name, $value) = explode('=', $line, 2);
-           $name = trim($name);
-           $value = trim($value);
-           putenv(sprintf('%s=%s', $name, $value));
-       }
-       return true;
-   }
-
-   // Load environment variables from .env file
-   loadEnv(__DIR__ . '/.env');
-
-   // Retrieve the database connection details from environment variables
-   $dbHost = getenv('DB_HOST');
-   $dbUser = getenv('DB_USER');
-   $dbPassword = getenv('DB_PASSWORD');
-   $dbName = getenv('DB_NAME');
-
-   ?>
-
-   ON a multi-node setup, remember to provide the IP address of the database server in the .env file.
-
-
-7. Test
-
-```
-curl http://localhost
+http://<Your-AWS-Public-IP>:80
 ```
