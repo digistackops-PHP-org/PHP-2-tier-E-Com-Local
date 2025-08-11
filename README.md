@@ -163,14 +163,30 @@ sudo git checkout 02-Local-setup-Prod
 ```
 sudo cp -r * /var/www/html/
 ```
-
-#### Pass our DB Creentials as Environment Variables
+## Good to Know
 
 ```
-export MYSQL_HOST="<your-DB-Private-IP>"
-export MYSQL_USER="ecomuser"
-export MYSQL_PASSWORD="P@55Word"
-export MYSQL_DATABASE="ecomdb"
+HERE Issue is
+your PHP code is fine for reading environment variables via getenv(), 
+but in Apache/HTTPD passing environment variables via "export" commands is in your shell do not automatically become available to PHP unless you pass them into the web server’s environment.
+	
+When PHP runs inside Apache, it only sees environment variables defined in:
+
+		1. Apache config (SetEnv)
+		2. ".env" file loaded by code {recommended easy to containerize}
+		3. mention Environment variables in https service file
+
+```
+#### Pass our DB Creentials as .env file, Place this .env in the same directory as index.php:
+```
+sudo vim /var/www/html/.env
+```
+
+```
+MYSQL_HOST=<AWS-DB-Private-IP>
+MYSQL_USER=ecomuser
+MYSQL_PASSWORD=P@55Word
+MYSQL_DATABASE=ecomdb
 ```
 
 #### Restart our Web server HTTPD
