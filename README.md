@@ -164,7 +164,7 @@ sudo git checkout 02-Local-setup-Prod
 sudo cp -r * /var/www/html/
 ```
 ## Good to Know
-
+### HERE these PHP code didnt accept passing DB credentials through "export" command
 ```
 HERE Issue is
 your PHP code is fine for reading environment variables via getenv(), 
