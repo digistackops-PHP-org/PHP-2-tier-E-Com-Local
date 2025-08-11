@@ -117,11 +117,22 @@ cd PHP-2-tier-UMS-App
 ```
 sudo git checkout 01-Local-setup-Dev
 ```
+#### Cop ythe Content to our HTTPD webserver Directory
+
+```
+sudo cp * /var/www/html/
+```
+
 #### Edit "index.php" and Mention your DB Details
 
 ```
 // use when starting application locally
  $link = mysqli_connect('<AWS-Private-IP>', 'ecomuser', 'ecompassword', 'ecomdb');
+```
+
+## Access Your Application in Browser
+```
+http://<Your-AWS-Public-IP>:80
 ```
 
 # Load Dummy Data to our Application
