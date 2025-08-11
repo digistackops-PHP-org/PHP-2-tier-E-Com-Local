@@ -161,7 +161,7 @@ sudo git checkout 02-Local-setup-Prod
 #### Cop ythe Content to our HTTPD webserver Directory
 
 ```
-sudo cp * /var/www/html/
+sudo cp -r * /var/www/html/
 ```
 
 #### Pass our DB Creentials as Environment Variables
@@ -183,6 +183,7 @@ sudo systemctl restart httpd
 ```
 http://<Your-AWS-Public-IP>:80
 ```
+<img width="1193" height="506" alt="image" src="https://github.com/user-attachments/assets/ec9a7b94-bb45-420d-8c66-af7cabe2f83a" />
 
 # Load Dummy Data to our Application
 
