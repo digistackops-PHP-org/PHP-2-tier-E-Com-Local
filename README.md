@@ -85,7 +85,7 @@ SHOW GRANTS FOR 'ecomuser'@'%';
 
 # Application server Setup
 
-Create "t2.micro" EC2 Instance and Open port "" for PHP Application server
+Create "t2.micro" EC2 Instance and Open port "80" for PHP Application server
 
 ## Note ==> HERE in our PROD Branch Code we alredy Edit these Code in "index.php", so no need to Change any thing HERE
 
