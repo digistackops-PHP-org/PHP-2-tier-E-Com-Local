@@ -117,11 +117,6 @@ cd PHP-2-tier-E-Com-Local
 ```
 sudo git checkout 01-Local-setup-Dev
 ```
-#### Cop ythe Content to our HTTPD webserver Directory
-
-```
-sudo cp * /var/www/html/
-```
 
 #### Edit "index.php" and Mention your DB Details
 
@@ -129,11 +124,18 @@ sudo cp * /var/www/html/
 // use when starting application locally
  $link = mysqli_connect('<AWS-Private-IP>', 'ecomuser', 'ecompassword', 'ecomdb');
 ```
+#### Cop ythe Content to our HTTPD webserver Directory
+
+```
+sudo cp -r * /var/www/html/
+```
 
 ## Access Your Application in Browser
 ```
 http://<Your-AWS-Public-IP>:80
 ```
+<img width="1161" height="535" alt="image" src="https://github.com/user-attachments/assets/afd4be22-39b7-4255-846a-c59fe1dc2b72" />
+
 
 # Load Dummy Data to our Application
 
@@ -146,7 +148,7 @@ Way-2 ==> We can Load the Data from Another Serevr {Recommended}
 ### Way-1 ==> Login to your MYSQL DB server
 Execute these Steps to create a file "db-load.sql"
 ```
-cat > db-load.sql <<EOF
+sudo cat > db-load.sql <<EOF
 USE ecomdb;
 CREATE TABLE products (
   id mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
@@ -227,3 +229,5 @@ SELECT * FROM products;
 ```
 http://<Your-AWS-Public-IP>:80
 ```
+<img width="1331" height="616" alt="image" src="https://github.com/user-attachments/assets/adde0827-eab4-42c2-9ed0-eda26edfd95a" />
+
