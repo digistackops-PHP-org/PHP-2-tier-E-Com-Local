@@ -151,8 +151,8 @@ sudo yum install git -y
 #### To start this application first you can get the code using below url
 ##### Clone the Repo
 ```
-sudo git clone https://github.com/techizone-Small-Project-org/PHP-2-tier-E-Com_App.git
-cd PHP-2-tier-E-Com_App
+sudo git https://github.com/digistackops-PHP-org/PHP-2-tier-E-Com-Local.git
+cd PHP-2-tier-E-Com-Local
 ```
 ##### Switch to Local-setup Branch
 ```
