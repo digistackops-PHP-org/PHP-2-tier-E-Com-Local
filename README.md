@@ -45,6 +45,21 @@ Test it is working or Not
 ```
 SELECT VERSION();
 ```
+## Create one Databse Admin User for our DB 
+These user can login to DB to do Tasks and used 
+```
+CREATE USER '<user-name>'@'Host-IP' IDENTIFIED BY 'Password-HERE';
+GRANT ALL PRIVILEGES ON <DB-Name>.* TO '<user-name>'@'Host-IP';
+FLUSH PRIVILEGES;
+```
+
+```
+CREATE USER 'dbadmin'@'%' IDENTIFIED BY 'Admin@123';
+GRANT ALL PRIVILEGES ON *.* TO 'dbadmin'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+```
+HERE "." => All DB can Access By these User
+	 "%" => These User can allow from any Host-Machine
 
 # Application server Setup
 
