@@ -50,23 +50,6 @@ SELECT VERSION();
 
 ### Create "t2.micro" EC2 Instance and Open port "80" for PHP Application server
 
-## Setup your Application Database by executing "initdb.sql" script from Application-server
-
-Step:1 ==> install "MYSQL-Client" for communicate with MYSQL Database
-```
-sudo yum update -y
-sudo wget https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm
-sudo dnf install mysql80-community-release-el9-1.noarch.rpm -y
-sudo rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2023
-sudo dnf install mysql-community-client -y
-```
-Step:2 ==> Execute your "init.sql" script for your Application DB setup
-
-```
-mysql -h <DB-Private-IP> -u root -p <DB-Root-Password> < initdb.sql
-```
-why We use root user HERE => because we just launch MYSQL Db so no other user in DB
-
 ## Note ==> HERE in our PROD Branch Code we alredy Edit these Code in "index.php", so no need to Change any thing HERE
 
 ### Good-To-Know
@@ -131,13 +114,29 @@ sudo yum install git -y
 #### To start this application first you can get the code using below url
 ##### Clone the Repo
 ```
-sudo git https://github.com/digistackops-PHP-org/PHP-2-tier-E-Com-Local.git
+sudo git clone https://github.com/digistackops-PHP-org/PHP-2-tier-E-Com-Local.git
 cd PHP-2-tier-E-Com-Local
 ```
 ##### Switch to Local-setup Branch
 ```
 sudo git checkout 02-Local-setup-Prod
 ```
+## Setup your Application Database by executing "initdb.sql" script from Application-server
+
+Step:1 ==> install "MYSQL-Client" for communicate with MYSQL Database
+```
+sudo yum update -y
+sudo wget https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm
+sudo dnf install mysql80-community-release-el9-1.noarch.rpm -y
+sudo rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2023
+sudo dnf install mysql-community-client -y
+```
+Step:2 ==> Execute your "init.sql" script for your Application DB setup
+
+```
+mysql -h <DB-Private-IP> -u root -p <DB-Root-Password> < initdb.sql
+```
+why We use root user HERE => because we just launch MYSQL Db so no other user in DB
 #### Cop ythe Content to our HTTPD webserver Directory
 
 ```
