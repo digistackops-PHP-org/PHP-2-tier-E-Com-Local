@@ -63,7 +63,7 @@ sudo dnf install mysql-community-client -y
 Step:2 ==> Execute your "init.sql" script for your Application DB setup
 
 ```
-mysql -u root -p<root-Password> < initdb.sql
+mysql -h <DB-Private-IP> -u appuser -p ecomdb < initdb.sql
 ```
 ## Note ==> HERE in our PROD Branch Code we alredy Edit these Code in "index.php", so no need to Change any thing HERE
 
@@ -162,7 +162,7 @@ sudo vim /var/www/html/.env
 
 ```
 MYSQL_HOST=<AWS-DB-Private-IP>
-MYSQL_USER=ecomuser
+MYSQL_USER=appuser
 MYSQL_PASSWORD=P@55Word
 MYSQL_DATABASE=ecomdb
 ```
@@ -178,65 +178,6 @@ sudo systemctl restart httpd
 http://<Your-AWS-Public-IP>:80
 ```
 <img width="1193" height="506" alt="image" src="https://github.com/user-attachments/assets/ec9a7b94-bb45-420d-8c66-af7cabe2f83a" />
-
-# Load Dummy Data to our Application
-
-## 2 Ways we can Load the DATA to our DB
-```
-Way-1 ==> Login to DB and Execute these Script
-Way-2 ==> We can Load the Data from Another Serevr {Recommended}
-             These way in Real-Time product info Loaded by End-users or other Team from their Portal
-```
-### Way-1 ==> Login to your MYSQL DB server
-Execute these Steps to create a file "db-load.sql"
-```
-cat > db-load.sql <<EOF
-USE ecomdb;
-CREATE TABLE products (
-  id mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  Name varchar(255) DEFAULT NULL,
-  Price decimal(10,2) DEFAULT NULL,
-  ImageUrl varchar(255) DEFAULT NULL,
-  PRIMARY KEY (id)
-);
-INSERT INTO products (Name,Price,ImageUrl) VALUES 
-  ("Laptop", "100", "c-1.png"),
-  ("Drone", "200", "c-2.png"),
-  ("VR", "300", "c-3.png"),
-  ("Tablet", "5", "c-5.png"),
-  ("Watch", "90", "c-6.png"),
-  ("Phone", "80", "c-8.png"),
-  ("Laptop", "150", "c-4.png");
-EOF
-```
-Load these DATA into DB
-
-```
-mysql -u ecomuser -p ecomdb < /path/to/db-load.sql
-```
-
-### Way-2 ==> Login to your other server say example catalouge server
-
-Prerequisites
-```
-1. The MySQL client (mysql) must be installed on your application server.
-2. You must know the MySQL username, password, host, and target database.
-3. You must have network access (firewall/security groups) allowing the app server to connect to the MySQL server (172.31.26.26) on port 3306.
-```
-#### Install MYSQL Client
-```
-sudo yum update -y
-sudo wget https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm
-sudo dnf install mysql80-community-release-el9-1.noarch.rpm -y
-sudo rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2023
-sudo dnf install mysql-community-client -y
-```
-
-#### Load DATA from Catalogue Server to Db
-
-```
-mysql -h <DB-Private-IP> -u ecomuser -p ecomdb < /path/to/db-load.sql
-```
 
 
 # Check data saved in DB or Not
