@@ -46,47 +46,25 @@ Test it is working or Not
 SELECT VERSION();
 ```
 
-## Create our Application DB 'user'
-```
-CREATE DATABASE ecomdb;
-```
-Check the DB created or Not
-```
-SHOW DATABASES LIKE 'ecomdb';
-```
-## Create one system User for our Application in DB
-These user can login to DB to do Tasks
-```
-CREATE USER '<user-name>'@'Host-IP' IDENTIFIED BY 'Password-HERE';
-
-GRANT ALL PRIVILEGES ON <DB-Name>.* TO '<user-name>'@'Host-IP';
-
-FLUSH PRIVILEGES;
-```
-
-```
-CREATE USER 'ecomuser'@'%' IDENTIFIED BY 'P@55Word';
-GRANT ALL PRIVILEGES ON ecomdb.* TO 'ecomuser'@'%';
-FLUSH PRIVILEGES;
-```
-#### HERE "%" => means any Host will connect
-
-Check the Permissions of the "appuser" in DB
-
-```
-SELECT user, host FROM mysql.user WHERE user='ecomuser';
-```
-
-Check the Grants of the "appuser" in DB
-
-```
-SHOW GRANTS FOR 'ecomuser'@'%';
-```
-
 # Application server Setup
 
-Create "t2.micro" EC2 Instance and Open port "80" for PHP Application server
+### Create "t2.micro" EC2 Instance and Open port "80" for PHP Application server
 
+## Setup your Application Database by executing "initdb.sql" script from Application-server
+
+Step:1 ==> install "MYSQL-Client" for communicate with MYSQL Database
+```
+sudo yum update -y
+sudo wget https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm
+sudo dnf install mysql80-community-release-el9-1.noarch.rpm -y
+sudo rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2023
+sudo dnf install mysql-community-client -y
+```
+Step:2 ==> Execute your "init.sql" script for your Application DB setup
+
+```
+mysql -u root -p<root-Password> < initdb.sql
+```
 ## Note ==> HERE in our PROD Branch Code we alredy Edit these Code in "index.php", so no need to Change any thing HERE
 
 ### Good-To-Know
