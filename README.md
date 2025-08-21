@@ -58,7 +58,7 @@ CREATE USER 'dbadmin'@'%' IDENTIFIED BY 'Admin@123';
 GRANT ALL PRIVILEGES ON *.* TO 'dbadmin'@'%' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 ```
-HERE "." => All DB can Access By these User
+HERE "." => All DB can Access By these User,
 	 "%" => These User can allow from any Host-Machine
 
 # Application server Setup
