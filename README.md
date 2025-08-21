@@ -45,7 +45,7 @@ Test it is working or Not
 ```
 SELECT VERSION();
 ```
-## Create one Databse Admin User for our DB 
+### Create one Databse Admin User for our DB 
 These user can login to DB to do Tasks and used 
 ```
 CREATE USER '<user-name>'@'Host-IP' IDENTIFIED BY 'Password-HERE';
