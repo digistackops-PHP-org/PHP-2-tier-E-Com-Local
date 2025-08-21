@@ -149,7 +149,7 @@ sudo dnf install mysql-community-client -y
 Step:2 ==> Execute your "init.sql" script for your Application DB setup
 
 ```
-mysql -h <DB-Private-IP> -u root -p <DB-Root-Password> < initdb.sql
+mysql -h <DB-Prvate-IP> -udbadmin -pAdmin@123 < initdb.sql
 ```
 why We use root user HERE => because we just launch MYSQL Db so no other user in DB
 #### Cop ythe Content to our HTTPD webserver Directory
